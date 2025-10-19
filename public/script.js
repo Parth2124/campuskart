@@ -380,6 +380,13 @@ async function sendContactMessage(e) {
         return;
     }
 
+    const submitBtn = document.querySelector('#contactForm button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
     const data = {
         itemId: window.currentContactItem.id,
         name: document.getElementById('contactName').value.trim(),
@@ -393,6 +400,9 @@ async function sendContactMessage(e) {
     // Client-side validation
     if (!data.name || !data.collegeName || !data.branch || !data.enrollmentNumber || !data.phone || !data.email) {
         showNotification('Please fill in all required fields.', 'error');
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         return;
     }
 
@@ -417,6 +427,10 @@ async function sendContactMessage(e) {
         }
     } catch (error) {
         showNotification('An error occurred. Please try again.', 'error');
+    } finally {
+        // Re-enable button and restore original text
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 }
 

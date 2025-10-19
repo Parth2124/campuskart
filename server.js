@@ -29,7 +29,7 @@ app.use(session({
 // ---------------------- PostgreSQL Connection ----------------------
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: { rejectUnauthorized: false }
 });
 
 pool.connect()
@@ -189,6 +189,30 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
   }
 });
 
+
+
+
+// Delete item (admin only)
+app.delete('/api/admin/items/:id', authenticateToken, isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query('SELECT * FROM items WHERE id=$1', [id]);
+    if (result.rows.length === 0) {
+      // Item not found, but treat as successful deletion for idempotency
+      return res.json({ message: 'Item deleted successfully' });
+    }
+
+    await pool.query('DELETE FROM items WHERE id=$1', [id]);
+    res.json({ message: 'Item deleted successfully' });
+  } catch (err) {
+    console.error('Delete item error:', err);
+    res.status(500).json({ message: 'Database error while deleting item' });
+  }
+});
+
+
+
 // ---------------------- Admin ----------------------
 app.get('/api/admin/pending-items', authenticateToken, isAdmin, async (req, res) => {
   try {
@@ -219,6 +243,7 @@ app.put('/api/admin/items/:id/status', authenticateToken, isAdmin, async (req, r
   }
 });
 
+
 // ---------------------- Orders ----------------------
 app.post('/api/orders', authenticateToken, async (req, res) => {
   try {
@@ -248,3 +273,101 @@ app.get('/', (req, res) => {
 
 // ---------------------- Start Server ----------------------
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+// ---------------------- User Profile ----------------------
+app.get('/api/user/items', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT i.*, u.name AS seller_name, u.email AS seller_email, u.class AS seller_class
+      FROM items i
+      JOIN users u ON i.seller_id = u.id
+      WHERE i.seller_id = $1
+      ORDER BY i.created_at DESC
+    `, [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
+app.get('/api/user/orders', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT o.*, i.title, i.description, i.price, i.image_url, i.category, i.mode,
+             u.name AS seller_name, u.email AS seller_email, u.class AS seller_class
+      FROM orders o
+      JOIN items i ON o.item_id = i.id
+      JOIN users u ON o.seller_id = u.id
+      WHERE o.buyer_id = $1
+      ORDER BY o.created_at DESC
+    `, [req.user.id]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
+// ---------------------- Contact Seller ----------------------
+app.post('/api/contact-seller', authenticateToken, async (req, res) => {
+  try {
+    const { itemId, name, collegeName, branch, enrollmentNumber, phone, email } = req.body;
+    if (!itemId || !name || !collegeName || !branch || !enrollmentNumber || !phone || !email)
+      return res.status(400).json({ message: 'All fields are required' });
+
+    // Fetch item and seller details
+    const itemResult = await pool.query(
+      `SELECT i.*, u.name AS seller_name, u.email AS seller_email
+       FROM items i
+       JOIN users u ON i.seller_id = u.id
+       WHERE i.id = $1 AND i.status = 'approved'`,
+      [itemId]
+    );
+
+    if (itemResult.rows.length === 0)
+      return res.status(404).json({ message: 'Item not found or not approved' });
+
+    const item = itemResult.rows[0];
+
+    // Configure mail transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'campuskart09@gmail.com',
+        pass: process.env.GMAIL_APP_PASSWORD
+      }
+    });
+
+    const mailOptions = {
+      from: 'campuskart09@gmail.com',
+      to: item.seller_email,
+      subject: `New Inquiry for ${item.title}`,
+      html: `
+        <h2>New Buyer Inquiry</h2>
+        <p><strong>Item:</strong> ${item.title}</p>
+        <p><strong>Description:</strong> ${item.description}</p>
+        <p><strong>Price:</strong> ₹${item.price}</p>
+        <hr>
+        <h3>Buyer Details:</h3>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>College:</strong> ${collegeName}</p>
+        <p><strong>Branch:</strong> ${branch}</p>
+        <p><strong>Enrollment No:</strong> ${enrollmentNumber}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Add to user's orders after successful email
+    await pool.query(
+      'INSERT INTO orders (item_id, buyer_id, seller_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+      [itemId, req.user.id, item.seller_id]
+    );
+
+    res.json({ message: 'Contact request sent successfully' });
+  } catch (err) {
+    console.error('Email error:', err);
+    res.status(500).json({ message: 'Failed to send email' });
+  }
+});
