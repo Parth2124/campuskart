@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusKart - Campus Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shopping-cart"></i>
+                <span>CampusKart</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+                <a href="#marketplace" class="nav-link">
+                    <i class="fas fa-store"></i>
+                    Marketplace
+                </a>
+                <a href="#contact" class="nav-link">
+                    <i class="fas fa-envelope"></i>
+                    Contact
+                </a>
+            </div>
+            
+            <div class="nav-user" id="navUser">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Welcome to <i>CampusKart</i></h1>
+                <p>Your one-stop campus marketplace for buying, selling, and borrowing everything you need. From lab coats to textbooks, find what you're looking for or make some extra cash!</p>
+                <div class="hero-buttons">
+                    <button class="hero-btn primary" onclick="scrollToMarketplace()">
+                        <i class="fas fa-shopping-bag"></i>
+                        Browse Items
+                    </button>
+                    <button class="hero-btn secondary" onclick="showAddItemModal()">
+                        <i class="fas fa-plus"></i>
+                        Sell Something
+                    </button>
+                </div>
+            </div>
+            <div class="hero-animation">
+                <div class="floating-items">
+                    <div class="item-icon">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <div class="item-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="item-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <div class="item-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search for items...">
+            </div>
+            <div class="filters">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="books">Books</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="lab-equipment">Lab Equipment</option>
+                    <option value="sports">Sports</option>
+                    <option value="other">Other</option>
+                </select>
+                <select class="filter-select" id="modeFilter">
+                    <option value="all">All Modes</option>
+                    <option value="buy">Buy</option>
+                    <option value="borrow">Borrow</option>
+                    <option value="free">Free</option>
+                </select>
+                <button class="clear-btn" onclick="clearFilters()">
+                    <i class="fas fa-times"></i>
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace Section -->
+    <section class="marketplace" id="marketplace">
+        <div class="container">
+            <div class="section-header">
+                <h2>Available Items</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" onclick="setViewMode('grid')">
+                        <i class="fas fa-th"></i>
+                        Grid
+                    </button>
+                    <button class="view-btn" onclick="setViewMode('list')">
+                        <i class="fas fa-list"></i>
+                        List
+                    </button>
+                </div>
+            </div>
+            <div class="items-grid" id="itemsGrid">
+                <!-- Items will be populated by JavaScript -->
+            </div>
+            
+            
+            <div class="no-items" id="noItems" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No items found</h3>
+                <p>Try adjusting your search criteria or check back later for new items.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2>Get in Touch</h2>
+            <p>Have questions or need support? We're here to help!</p>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email Support</h3>
+                    <p>support@campuskart.com</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone Support</h3>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Support Hours</h3>
+                    <p>Mon-Fri: 9AM-6PM</p>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Location</h3>
+                    <p>University Campus</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-shopping-cart"></i> CampusKart</h3>
+                    <p>Your trusted campus marketplace for buying, selling, and borrowing items. Making campus life easier, one transaction at a time.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#marketplace">Marketplace</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#" onclick="showAddItemModal()">Sell Items</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#" onclick="filterByCategory('books')">Books</a></li>
+                        <li><a href="#" onclick="filterByCategory('electronics')">Electronics</a></li>
+                        <li><a href="#" onclick="filterByCategory('clothing')">Clothing</a></li>
+                        <li><a href="#" onclick="filterByCategory('lab-equipment')">Lab Equipment</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Report Issues</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CampusKart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Authentication Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> Welcome to CampusKart</h2>
+                <button class="close-btn" onclick="closeModal('authModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="logo-section">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h1>Campus<span>Kart</span></h1>
+                        <p>Join our campus community</p>
+                    </div>
+                    
+                    <div class="auth-tabs">
+                        <button class="tab-btn active" onclick="switchTab('login')">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('register')">
+                            <i class="fas fa-user-plus"></i>
+                            Register
+                        </button>
+                    </div>
+                    
+                    <form class="auth-form active" id="loginForm">
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="Email address" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </button>
+                    </form>
+                    
+                    <form class="auth-form" id="registerForm">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="registerName" placeholder="Full name" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="registerEmail" placeholder="Email address" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-graduation-cap"></i>
+                            <select id="registerClass" required>
+                                <option value="">Select your class</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                                <option value="Graduate">Graduate</option>
+                                <option value="Faculty">Faculty</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="registerPhone" placeholder="Phone number" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="registerPassword" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-user-plus"></i>
+                            Register
+                        </button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        <p>By registering, you agree to our Terms of Service and Privacy Policy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div class="modal" id="addItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Item</h2>
+                <button class="close-btn" onclick="closeModal('addItemModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addItemForm">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="itemTitle">
+                            <i class="fas fa-tag"></i>
+                            Item Title
+                        </label>
+                        <input type="text" id="itemTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="itemCategory">
+                            <i class="fas fa-folder"></i>
+                            Category
+                        </label>
+                        <select id="itemCategory" required>
+                            <option value="">Select category</option>
+                            <option value="books">Books</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="lab-equipment">Lab Equipment</option>
+                            <option value="sports">Sports</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="itemMode">
+                            <i class="fas fa-exchange-alt"></i>
+                            Mode
+                        </label>
+                        <select id="itemMode" required>
+                            <option value="">Select mode</option>
+                            <option value="buy">For Sale</option>
+                            <option value="borrow">For Borrow</option>
+                            <option value="free">Free</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="itemPrice">
+                            <i class="fas fa-rupee-sign"></i>
+                            Price (leave empty if free)
+                        </label>
+                        <input type="number" id="itemPrice" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="itemDescription">
+                        <i class="fas fa-align-left"></i>
+                        Description
+                    </label>
+                    <textarea id="itemDescription" rows="4" placeholder="Describe your item, its condition, and any relevant details..." required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="itemPhone">
+                        <i class="fas fa-phone"></i>
+                        Phone Number
+                    </label>
+                    <input type="tel" id="itemPhone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="input-group">
+                    <label for="itemImage">
+                        <i class="fas fa-image"></i>
+                        Item Image
+                    </label>
+                    <div class="image-upload">
+                        <input type="file" id="itemImage" accept="image/*" required>
+                        <div class="image-preview" id="imagePreview">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload image</p>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i>
+                    Add Item
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Seller Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-envelope"></i> Contact Seller</h2>
+                <button class="close-btn" onclick="closeModal('contactModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="seller-info" id="sellerInfo">
+                <!-- Will be populated by JavaScript -->
+                <div class="seller-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="seller-details">
+                    <h3 id="sellerName"></h3>
+                    <p><i class="fas fa-envelope"></i> <span id="sellerEmail"></span></p>
+                    <p><i class="fas fa-phone"></i> <span id="sellerPhone"></span></p>
+                    <p><i class="fas fa-graduation-cap"></i> <span id="sellerClass"></span></p>
+                </div>
+            </div>
+            <form id="contactForm">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="contactName">
+                            <i class="fas fa-user"></i>
+                            Name
+                        </label>
+                        <input type="text" id="contactName" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="contactCollege">
+                            <i class="fas fa-university"></i>
+                            College Name
+                        </label>
+                        <input type="text" id="contactCollege" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="contactBranch">
+                            <i class="fas fa-code-branch"></i>
+                            Branch
+                        </label>
+                        <input type="text" id="contactBranch" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="contactEnrollment">
+                            <i class="fas fa-id-card"></i>
+                            Enrollment Number
+                        </label>
+                        <input type="text" id="contactEnrollment" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="contactPhone">
+                            <i class="fas fa-phone"></i>
+                            Phone Number
+                        </label>
+                        <input type="tel" id="contactPhone" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="contactEmail">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </label>
+                        <input type="email" id="contactEmail" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Contact Request
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <button class="close-btn" onclick="closeModal('profileModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="profile-content">
+                <div class="profile-tabs">
+                    <button class="tab-btn active" onclick="switchProfileTab('items')">
+                        <i class="fas fa-box"></i>
+                        My Items
+                    </button>
+                    <button class="tab-btn" onclick="switchProfileTab('orders')">
+                        <i class="fas fa-shopping-bag"></i>
+                        My Orders
+                    </button>
+                </div>
+                
+                <div class="profile-section active" id="myItemsSection">
+                    <div class="section-header">
+                        <h3>Items I'm Selling</h3>
+                        <button class="hero-btn primary" onclick="showAddItemModal()">
+                            <i class="fas fa-plus"></i>
+                            Add New Item
+                        </button>
+                    </div>
+                    <div class="items-grid" id="myItemsGrid">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="profile-section" id="myOrdersSection">
+                    <h3>Items I've Ordered</h3>
+                    <div class="items-grid" id="myOrdersGrid">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-shield-alt"></i> Admin Panel</h2>
+                <button class="close-btn" onclick="closeModal('adminModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="admin-content">
+                <h3>Pending Items for Approval</h3>
+                <div class="items-grid" id="pendingItemsGrid">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
