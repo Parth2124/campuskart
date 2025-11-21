@@ -9,6 +9,8 @@ import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { Resend } from 'resend';
+
 dotenv.config();
 
 const { Pool } = pkg;
@@ -335,64 +337,24 @@ app.post('/api/contact-seller', authenticateToken, async (req, res) => {
     const item = itemResult.rows[0];
 
     // Send email using nodemailer with Gmail SMTP
-    console.log('Attempting to send email to:', item.seller_email);
 
-    try {
-      const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // Use TLS
-        auth: {
-          user: process.env.GMAIL_USER || 'campuskart09@gmail.com',
-          pass: process.env.GMAIL_APP_PASSWORD
-        },
-        // Add connection timeout and other options for better reliability
-        pool: true,
-        maxConnections: 1,
-        maxMessages: 1,
-        tls: {
-          rejectUnauthorized: false,
-          ciphers: 'SSLv3'
-        },
-        // Add connection timeout
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 30000
-      });
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-      const mailOptions = {
-        from: process.env.GMAIL_USER || 'campuskart09@gmail.com',
-        to: item.seller_email,
-        subject: `New Inquiry for ${item.title}`,
-        html: `
-          <h2>New Buyer Inquiry</h2>
-          <p><strong>Item:</strong> ${item.title}</p>
-          <p><strong>Description:</strong> ${item.description}</p>
-          <p><strong>Price:</strong> ₹${item.price}</p>
-          <hr>
-          <h3>Buyer Details:</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>College:</strong> ${collegeName}</p>
-          <p><strong>Branch:</strong> ${branch}</p>
-          <p><strong>Enrollment No:</strong> ${enrollmentNumber}</p>
-          <p><strong>Phone:</strong> ${phone}</p>
-          <p><strong>Email:</strong> ${email}</p>
-        `
-      };
+const mail = await resend.emails.send({
+  from: "campuskart@onboarding.resend.dev",
+  to: item.seller_email,
+  subject: `New Inquiry for ${item.title}`,
+  html: `
+    <h2>New Buyer Inquiry</h2>
+    <p><strong>Name:</strong> ${name}</p>
+    <p><strong>College:</strong> ${collegeName}</p>
+    <p><strong>Branch:</strong> ${branch}</p>
+    <p><strong>Enrollment No:</strong> ${enrollmentNumber}</p>
+    <p><strong>Phone:</strong> ${phone}</p>
+    <p><strong>Email:</strong> ${email}</p>
+  `
+});
 
-      // Add timeout to prevent hanging
-      const emailPromise = transporter.sendMail(mailOptions);
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Email sending timeout')), 30000) // Increased to 30 seconds
-      );
-
-      await Promise.race([emailPromise, timeoutPromise]);
-      console.log('Email sent successfully via Gmail SMTP');
-    } catch (emailErr) {
-      console.error('Email sending failed:', emailErr.message);
-      console.error('Email Error:', emailErr);
-      // Continue with order creation even if email fails
-    }
 
     // Always create the order record
     await pool.query(
