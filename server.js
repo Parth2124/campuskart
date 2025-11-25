@@ -320,6 +320,31 @@ app.post('/api/contact-seller', authenticateToken, async (req, res) => {
     if (!itemId || !name || !collegeName || !branch || !enrollmentNumber || !phone || !email)
       return res.status(400).json({ message: 'All fields are required' });
 
+    // Validation regex and checks
+    const stringRegex = /^[a-zA-Z\s]+$/;
+    const integerRegex = /^\d+$/;
+    const phoneRegex = /^\d{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!stringRegex.test(name)) {
+      return res.status(400).json({ message: 'Name should contain only letters and spaces.' });
+    }
+    if (!stringRegex.test(collegeName)) {
+      return res.status(400).json({ message: 'College Name should contain only letters and spaces.' });
+    }
+    if (!stringRegex.test(branch)) {
+      return res.status(400).json({ message: 'Branch should contain only letters and spaces.' });
+    }
+    if (!integerRegex.test(enrollmentNumber)) {
+      return res.status(400).json({ message: 'Enrollment Number should contain only numbers.' });
+    }
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Phone number should be exactly 10 digits.' });
+    }
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email address.' });
+    }
+
     // Fetch item and seller details
     const itemResult = await pool.query(
       `SELECT i.*, u.name AS seller_name, u.email AS seller_email

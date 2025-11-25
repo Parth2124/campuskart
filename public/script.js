@@ -397,10 +397,39 @@ async function sendContactMessage(e) {
         email: document.getElementById('contactEmail').value.trim()
     };
 
-    // Client-side validation
-    if (!data.name || !data.collegeName || !data.branch || !data.enrollmentNumber || !data.phone || !data.email) {
-        showNotification('Please fill in all required fields.', 'error');
-        // Re-enable button
+    // Client-side validation - enhanced
+    const stringRegex = /^[a-zA-Z\s]+$/;
+    const integerRegex = /^\d+$/;
+    const phoneRegex = /^\d{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email validation with @ and domain
+
+    if (
+        !data.name || !stringRegex.test(data.name) ||
+        !data.collegeName || !stringRegex.test(data.collegeName) ||
+        !data.branch || !stringRegex.test(data.branch)
+    ) {
+        showNotification('Name, College Name and Branch should contain only letters and spaces.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+    }
+
+    if (!data.enrollmentNumber || !integerRegex.test(data.enrollmentNumber)) {
+        showNotification('Enrollment Number should contain only numbers.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+    }
+
+    if (!data.phone || !phoneRegex.test(data.phone)) {
+        showNotification('Phone number should be exactly 10 digits.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        return;
+    }
+
+    if (!data.email || !emailRegex.test(data.email)) {
+        showNotification('Please enter a valid email address.', 'error');
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
         return;
