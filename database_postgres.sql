@@ -55,7 +55,7 @@ VALUES
 ('Jane Smith', 'jane@student.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.', '3rd Year', '+1987654321', 'user')
 ON CONFLICT (email) DO NOTHING;
 
--- Sample items
+-- Sample items (Note: For production, replace with actual Cloudinary URLs after uploading images)
 INSERT INTO items (title, description, price, category, mode, phone, email, seller_id, status, image_url)
 VALUES
 ('Chemistry Lab Coat', 'White lab coat, size M, barely used. Perfect for chemistry lab sessions.', 15.00, 'lab-equipment', 'buy', '+1234567890', 'john.doe@gmail.com', 2, 'approved', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'),

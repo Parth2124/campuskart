@@ -9,7 +9,15 @@ import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import cloudinary from 'cloudinary';
 dotenv.config();
+
+// Cloudinary configuration
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const { Pool } = pkg;
 const app = express();
@@ -210,7 +218,19 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
 
     let imageUrl = null;
     if (req.file) {
-      imageUrl = `/uploads/${req.file.filename}`;
+      try {
+        const result = await cloudinary.v2.uploader.upload(req.file.path, {
+          folder: 'campuskart/items',
+          public_id: `item_${Date.now()}_${req.file.originalname}`,
+          resource_type: 'auto'
+        });
+        imageUrl = result.secure_url;
+        // Optionally delete the local file after upload
+        fs.unlinkSync(req.file.path);
+      } catch (uploadErr) {
+        console.error('Cloudinary upload error:', uploadErr);
+        return res.status(500).json({ message: 'Image upload failed' });
+      }
     }
 
     const dbResult = await pool.query(
