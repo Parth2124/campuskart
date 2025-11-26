@@ -173,9 +173,40 @@ app.get('/api/items', async (req, res) => {
 
 app.post('/api/items', authenticateToken, upload.single('image'), async (req, res) => {
   try {
-    const { title, description, price, category, mode, phone } = req.body;
-    if (!title || !description || !category || !mode || !phone)
+    const { title, description, price, category, mode, phone, email } = req.body;
+    if (!title || !description || !category || !mode || !phone || !email)
       return res.status(400).json({ message: 'Required fields missing' });
+
+    // Server-side validation
+    const stringRegex = /^[a-zA-Z\s]+$/;
+    const integerRegex = /^\d+$/;
+    const phoneRegex = /^\d{10}$/;
+    const gmailRegex = /^[^\s@]+@gmail\.com$/;
+
+    // Validate title (string only)
+    if (!stringRegex.test(title)) {
+      return res.status(400).json({ message: 'Title should contain only letters and spaces.' });
+    }
+
+    // Validate description (string only)
+    if (!stringRegex.test(description)) {
+      return res.status(400).json({ message: 'Description should contain only letters and spaces.' });
+    }
+
+    // Validate price (integer only if provided)
+    if (price && !integerRegex.test(price)) {
+      return res.status(400).json({ message: 'Price should contain only numbers.' });
+    }
+
+    // Validate phone (10 digits)
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: 'Phone number should be exactly 10 digits.' });
+    }
+
+    // Validate email (@gmail.com only)
+    if (!gmailRegex.test(email)) {
+      return res.status(400).json({ message: 'Email must be a valid Gmail address (ending with @gmail.com).' });
+    }
 
     let imageUrl = null;
     if (req.file) {
@@ -183,10 +214,10 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
     }
 
     const dbResult = await pool.query(
-      `INSERT INTO items (title, description, price, category, mode, image_url, phone, seller_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO items (title, description, price, category, mode, image_url, phone, email, seller_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id`,
-      [title, description, price || 0, category, mode, imageUrl, phone, req.user.id]
+      [title, description, price || 0, category, mode, imageUrl, phone, email, req.user.id]
     );
     res.json({ message: 'Item added successfully', itemId: dbResult.rows[0].id });
   } catch (err) {

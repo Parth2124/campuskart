@@ -489,13 +489,59 @@ function handleImagePreview(e) {
 async function handleAddItem(e) {
     e.preventDefault();
 
+    // Get form values
+    const title = document.getElementById('itemTitle').value.trim();
+    const description = document.getElementById('itemDescription').value.trim();
+    const category = document.getElementById('itemCategory').value;
+    const mode = document.getElementById('itemMode').value;
+    const price = document.getElementById('itemPrice').value;
+    const phone = document.getElementById('itemPhone').value.trim();
+    const email = document.getElementById('itemEmail').value.trim();
+
+    // Client-side validation
+    const stringRegex = /^[a-zA-Z\s]+$/;
+    const integerRegex = /^\d+$/;
+    const phoneRegex = /^\d{10}$/;
+    const gmailRegex = /^[^\s@]+@gmail\.com$/;
+
+    // Validate title (string only)
+    if (!title || !stringRegex.test(title)) {
+        showNotification('Title should contain only letters and spaces.', 'error');
+        return;
+    }
+
+    // Validate description (string only)
+    if (!description || !stringRegex.test(description)) {
+        showNotification('Description should contain only letters and spaces.', 'error');
+        return;
+    }
+
+    // Validate price (integer only if provided)
+    if (price && !integerRegex.test(price)) {
+        showNotification('Price should contain only numbers.', 'error');
+        return;
+    }
+
+    // Validate phone (10 digits)
+    if (!phone || !phoneRegex.test(phone)) {
+        showNotification('Phone number should be exactly 10 digits.', 'error');
+        return;
+    }
+
+    // Validate email (@gmail.com only)
+    if (!email || !gmailRegex.test(email)) {
+        showNotification('Email must be a valid Gmail address (ending with @gmail.com).', 'error');
+        return;
+    }
+
     const formData = new FormData();
-    formData.append('title', document.getElementById('itemTitle').value);
-    formData.append('description', document.getElementById('itemDescription').value);
-    formData.append('category', document.getElementById('itemCategory').value);
-    formData.append('mode', document.getElementById('itemMode').value);
-    formData.append('price', document.getElementById('itemPrice').value);
-    formData.append('phone', document.getElementById('itemPhone').value);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('category', category);
+    formData.append('mode', mode);
+    formData.append('price', price);
+    formData.append('phone', phone);
+    formData.append('email', email);
 
     const imageFile = document.getElementById('itemImage').files[0];
     if (imageFile) {

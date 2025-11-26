@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS items (
     mode TEXT CHECK (mode IN ('buy', 'borrow', 'free')) NOT NULL,
     image_url VARCHAR(500),
     phone VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     seller_id INT NOT NULL,
     status TEXT CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW(),
@@ -55,10 +56,10 @@ VALUES
 ON CONFLICT (email) DO NOTHING;
 
 -- Sample items
-INSERT INTO items (title, description, price, category, mode, phone, seller_id, status, image_url)
+INSERT INTO items (title, description, price, category, mode, phone, email, seller_id, status, image_url)
 VALUES
-('Chemistry Lab Coat', 'White lab coat, size M, barely used. Perfect for chemistry lab sessions.', 15.00, 'lab-equipment', 'buy', '+1234567890', 2, 'approved', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'),
-('Calculus Textbook', 'Calculus: Early Transcendentals, 8th Edition. Good condition.', 25.00, 'books', 'buy', '+1234567890', 2, 'approved', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'),
-('Laptop Stand', 'Adjustable aluminum laptop stand.', 20.00, 'electronics', 'buy', '+1987654321', 3, 'approved', 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop'),
-('Basketball', 'Indoor/outdoor basketball, good condition.', 0.00, 'sports', 'free', '+1987654321', 3, 'approved', 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop'),
-('Winter Jacket', 'Warm winter jacket, size L.', 30.00, 'clothing', 'buy', '+1234567890', 2, 'approved', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop');
+('Chemistry Lab Coat', 'White lab coat, size M, barely used. Perfect for chemistry lab sessions.', 15.00, 'lab-equipment', 'buy', '+1234567890', 'john.doe@gmail.com', 2, 'approved', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'),
+('Calculus Textbook', 'Calculus: Early Transcendentals, 8th Edition. Good condition.', 25.00, 'books', 'buy', '+1234567890', 'john.doe@gmail.com', 2, 'approved', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop'),
+('Laptop Stand', 'Adjustable aluminum laptop stand.', 20.00, 'electronics', 'buy', '+1987654321', 'jane.smith@gmail.com', 3, 'approved', 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=300&fit=crop'),
+('Basketball', 'Indoor/outdoor basketball, good condition.', 0.00, 'sports', 'free', '+1987654321', 'jane.smith@gmail.com', 3, 'approved', 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop'),
+('Winter Jacket', 'Warm winter jacket, size L.', 30.00, 'clothing', 'buy', '+1234567890', 'john.doe@gmail.com', 2, 'approved', 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop');
